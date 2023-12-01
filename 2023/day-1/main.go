@@ -134,14 +134,6 @@ func main() {
 
 	printWidth := 25
 	title := "\n\t\tAdvent of Code 2023 Day 1"
-	// fmt.Println(title)
-	// fmt.Println(strings.Repeat("=", 55))
-	// fmt.Println("Input fetched in", postFetchTime.Sub(startTime))
-	// fmt.Println("Part 1:")
-	// fmt.Printf("Result: %-*d\tTime: %v\n", printWidth, result1, endTime1.Sub(postFetchTime))
-	// fmt.Println("Part 2:")
-	// fmt.Printf("Result: %-*d\tTime: %v\n", printWidth, result2, endTime2.Sub(endTime1))
-	// fmt.Println("Total Time:", endTime2.Sub(startTime))
 
 	fmt.Println(color.Bold + color.Purple + title + color.Reset)
 	fmt.Println(color.Bold + color.Blue + strings.Repeat("=", 55) + color.Reset)
