@@ -61,6 +61,18 @@ var digitMap = map[string]int{
 	"nine":  9,
 }
 
+var replaceMap = map[string]string{
+	"one":   "o1e",
+	"two":   "t2o",
+	"three": "t3e",
+	"four":  "f4r",
+	"five":  "f5e",
+	"six":   "s6x",
+	"seven": "s7n",
+	"eight": "e8t",
+	"nine":  "n9e",
+}
+
 func getDigitIfContainsAsString(tail string) int {
 	for digit, num := range digitMap {
 		if strings.Contains(tail, digit) {
@@ -68,6 +80,48 @@ func getDigitIfContainsAsString(tail string) int {
 		}
 	}
 	return 0
+}
+
+func processLine(line string) string {
+	for digit, replace := range replaceMap {
+		line = strings.ReplaceAll(line, digit, replace)
+	}
+	return line
+}
+
+func part2Replace(input []string) int {
+	output := 0
+
+	for _, line := range input {
+		if line == "" {
+			continue
+		}
+		newLine := processLine(line)
+		firstDigit := ""
+		lastDigit := ""
+		loopLength := len(newLine)
+		for i := 0; i < int(loopLength); i++ {
+			if firstDigit == "" && isDigit(string(newLine[i])) {
+				firstDigit = string(newLine[i])
+			}
+			if lastDigit == "" && isDigit(string(newLine[len(newLine)-i-1])) {
+				lastDigit = string(newLine[len(newLine)-i-1])
+			}
+			if firstDigit != "" && lastDigit != "" {
+				break
+			}
+		}
+		if firstDigit == lastDigit && firstDigit == "" {
+			panic("No digits found")
+		}
+		strNum := firstDigit + lastDigit
+		number, err := strconv.Atoi(strNum)
+		if err != nil {
+			panic(err)
+		}
+		output += number
+	}
+	return output
 }
 
 func part2(input []string) int {
@@ -131,6 +185,8 @@ func main() {
 	endTime1 := time.Now()
 	result2 := part2(input)
 	endTime2 := time.Now()
+	result2Replace := part2Replace(input)
+	endTime2Replace := time.Now()
 
 	printWidth := 25
 	title := "\n\t\tAdvent of Code 2023 Day 1"
@@ -143,6 +199,8 @@ func main() {
 	fmt.Printf(color.Bold+"Result: %-*d\tTime: %v\n"+color.Reset, printWidth, result1, endTime1.Sub(postFetchTime))
 	fmt.Println(color.Bold + color.Blue + "Part 2:" + color.Reset)
 	fmt.Printf(color.Bold+"Result: %-*d\tTime: %v\n"+color.Reset, printWidth, result2, endTime2.Sub(endTime1))
+	fmt.Println(color.Bold + color.Blue + "Part 2 (Replace):" + color.Reset)
+	fmt.Printf(color.Bold+"Result: %-*d\tTime: %v\n"+color.Reset, printWidth, result2Replace, endTime2Replace.Sub(endTime2))
 	fmt.Println(color.Bold+color.Blue+"Total Time:"+color.Reset, endTime2.Sub(startTime))
 	fmt.Print("\n")
 }
