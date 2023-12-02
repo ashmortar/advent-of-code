@@ -82,30 +82,30 @@ func getDigitIfContainsAsString(tail string) int {
 	return 0
 }
 
-func processLine(line string) string {
+func processLines(lines []string) []string {
+	asString := strings.Join(lines, "\n")
 	for digit, replace := range replaceMap {
-		line = strings.ReplaceAll(line, digit, replace)
+		asString = strings.ReplaceAll(asString, digit, replace)
 	}
-	return line
+	return strings.Split(asString, "\n")
 }
 
 func part2Replace(input []string) int {
 	output := 0
-
-	for _, line := range input {
+	processedInput := processLines(input)
+	for _, line := range processedInput {
 		if line == "" {
 			continue
 		}
-		newLine := processLine(line)
 		firstDigit := ""
 		lastDigit := ""
-		loopLength := len(newLine)
+		loopLength := len(line)
 		for i := 0; i < int(loopLength); i++ {
-			if firstDigit == "" && isDigit(string(newLine[i])) {
-				firstDigit = string(newLine[i])
+			if firstDigit == "" && isDigit(string(line[i])) {
+				firstDigit = string(line[i])
 			}
-			if lastDigit == "" && isDigit(string(newLine[len(newLine)-i-1])) {
-				lastDigit = string(newLine[len(newLine)-i-1])
+			if lastDigit == "" && isDigit(string(line[len(line)-i-1])) {
+				lastDigit = string(line[len(line)-i-1])
 			}
 			if firstDigit != "" && lastDigit != "" {
 				break
