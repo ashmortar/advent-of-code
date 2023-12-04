@@ -72,20 +72,22 @@ func cacheInput(year int, day int) string {
 // parsed as an array of strings.
 // if not it will fetch the file from the advent of code website
 // and cache it locally.
-func GetInput(year int, day int) []string {
+func GetInputArray(year int, day int) []string {
+	return strings.Split(GetInputString(year, day), "\n")
+}
+
+func GetInputString(year int, day int) string {
 	filepath := createFilepath(year, day)
 	bytes, err := os.ReadFile(filepath)
 
 	if err != nil {
 		if os.IsNotExist(err) {
-			return strings.Split(cacheInput(year, day), "\n")
+			return cacheInput(year, day)
 		}
 
 		panic(err)
 	}
 
-	str := string(bytes)
-
-	return strings.Split(str, "\n")
+	return string(bytes)
 
 }

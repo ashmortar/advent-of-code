@@ -179,7 +179,7 @@ func part2(input []string) int {
 
 func main() {
 	startTime := time.Now()
-	input := utils.GetInput(2023, 1)
+	input := utils.GetInputArray(2023, 1)
 	postFetchTime := time.Now()
 	result1 := part1(input)
 	endTime1 := time.Now()

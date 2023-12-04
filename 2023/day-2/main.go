@@ -104,14 +104,12 @@ func part2(input []string) int {
 
 func main() {
 	startTime := time.Now()
-	input := utils.GetInput(2023, 2)
+	input := utils.GetInputArray(2023, 2)
 	postFetchTime := time.Now()
 	result1 := part1(input)
 	endTime1 := time.Now()
 	result2 := part2(input)
 	endTime2 := time.Now()
-	// result2Replace := part2Replace(input)
-	// endTime2Replace := time.Now()
 
 	printWidth := 25
 	title := "\n\t\tAdvent of Code 2023 Day 2"
