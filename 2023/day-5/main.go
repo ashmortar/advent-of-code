@@ -10,8 +10,8 @@ import (
 	"github.com/TwiN/go-color"
 )
 
-var year = "{{Year}}"
-var day = "{{Day}}"
+var year = "2023"
+var day = "5"
 
 func Part1(input string) int {
 	output := 0
