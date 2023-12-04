@@ -46,10 +46,7 @@ func fetchProblem(year int, day int) string {
 
 	// problem is in the first <article> tag
 	problem := string(bytes)
-	problem = problem[strings.Index(problem, "<article>")+9:]
-	problem = problem[:strings.Index(problem, "</article>")]
-
-	return problem
+	return problem[strings.Index(problem, "<article") : strings.Index(problem, "</article>")+10]
 }
 
 func CacheProblem(year int, day int) string {
