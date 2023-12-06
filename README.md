@@ -47,3 +47,25 @@ go run ./generate 2020 1
 # or
 go run ./generate -year 2020 -day 1
 ```
+
+## Fork and use for your own solutions?
+
+If you want to use this repo as a starting point for your own solutions, you can fork it and then run the following command to remove all the solutions and generate the setup code for all the days.
+
+### Reset all years
+
+```bash
+go run ./generate -reset
+```
+
+### Reset a year
+
+```bash
+go run ./generate -reset -year 2020
+```
+
+### Reset a day
+
+```bash
+go run ./generate -reset -year 2020 -day 1
+```

@@ -12,17 +12,53 @@ import (
 	"strings"
 )
 
+func removeDir(path string) {
+	err := os.RemoveAll(path)
+	if err != nil {
+		fmt.Println("Error removing directory:", err)
+	}
+}
 func main() {
 	flagYear := flag.String("year", "", "Year of the puzzle")
 	flagDay := flag.String("day", "", "Day of the puzzle")
+	flagReset := flag.Bool("reset", false, "Reset the cache for the given year day or all")
 	flag.Parse()
+	numberReg := regexp.MustCompile(`\d+`)
 	year := string(*flagYear)
 	day := string(*flagDay)
+
+	if *flagReset {
+		if year == "" {
+			// remove all year directories
+			contents, err := os.ReadDir(utils.RootDir())
+			if err != nil {
+				fmt.Println("Error reading directory:", err)
+				return
+			}
+			for _, f := range contents {
+				if f.IsDir() && numberReg.MatchString(f.Name()) {
+					removeDir(filepath.Join(utils.RootDir(), f.Name()))
+				}
+			}
+			fmt.Println("Done!")
+			return
+		}
+
+		if day == "" {
+			//  remove the given year
+			removeDir(filepath.Join(utils.RootDir(), year))
+		} else {
+			// remove the given year day
+			removeDir(filepath.Join(utils.RootDir(), year, "day-"+day))
+		}
+
+		fmt.Println("Done!")
+		return
+	}
+
 	if year == "" || day == "" {
 		// scan through the directories and find the latest year and day
 		// and use the next day / year and day
-		numberReg := regexp.MustCompile(`\d+`)
-
 		contents, err := os.ReadDir(utils.RootDir())
 		if err != nil {
 			fmt.Println("Error reading directory:", err)
