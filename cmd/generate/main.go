@@ -45,7 +45,7 @@ func main() {
 		}
 
 		if day == "" {
-			//  remove the given year
+			//  remove the given ye
 			removeDir(filepath.Join(utils.RootDir(), year))
 		} else {
 			// remove the given year day
