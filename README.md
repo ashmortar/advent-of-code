@@ -20,11 +20,11 @@ go run ./aoc -year 2020 -day 1
 
 ### Run a specific year
 
-    ```bash
-    go run ./aoc 2020
-    # or
-    go run ./aoc -year 2020
-    ```
+```bash
+go run ./aoc 2020
+# or
+go run ./aoc -year 2020
+```
 
 ## Generating Setup Code
 
