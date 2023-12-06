@@ -5,6 +5,9 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path"
+	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 
@@ -12,7 +15,7 @@ import (
 )
 
 func getCookie() string {
-	content, err := os.ReadFile("./aoc_cookie")
+	content, err := os.ReadFile(filepath.Join(RootDir(), "aoc_cookie"))
 	if err != nil {
 		println("Please log in to advent of code website and place cookie into aoc_cookie file at root level")
 		panic(err)
@@ -54,7 +57,7 @@ func CacheProblem(year int, day int) string {
 	problem := fetchProblem(year, day)
 	problem = gohtml.Format(problem)
 	fmt.Printf("Caching problem for year %d day %d\n", year, day)
-	filepath := "./" + strconv.Itoa(year) + "/day-" + strconv.Itoa(day) + "/problem.html"
+	filepath := CreateFilepath(year, day, "problem.html")
 	err := os.WriteFile(filepath, []byte(problem), 0644)
 
 	if err != nil {
@@ -92,8 +95,8 @@ func fetchInput(year int, day int) string {
 	return string(bytes)
 }
 
-func createFilepath(year int, day int) string {
-	return "./" + strconv.Itoa(year) + "/day-" + strconv.Itoa(day) + "/puzzle.txt"
+func CreateFilepath(year int, day int, filename string) string {
+	return filepath.Join(RootDir(), strconv.Itoa(year), "day-"+strconv.Itoa(day), filename)
 }
 
 func cacheInput(year int, day int) string {
@@ -104,7 +107,7 @@ func cacheInput(year int, day int) string {
 		panic("Please log in to advent of code website and set AOC_SESSION environment variable")
 	}
 	fmt.Printf("Caching input for year %d day %d\n", year, day)
-	filepath := createFilepath(year, day)
+	filepath := CreateFilepath(year, day, "puzzle.txt")
 	err := os.WriteFile(filepath, []byte(input), 0644)
 
 	if err != nil {
@@ -123,7 +126,7 @@ func GetInputArray(year int, day int) []string {
 }
 
 func GetInputString(year int, day int) string {
-	filepath := createFilepath(year, day)
+	filepath := CreateFilepath(year, day, "puzzle.txt")
 	bytes, err := os.ReadFile(filepath)
 
 	if err != nil {
@@ -136,4 +139,10 @@ func GetInputString(year int, day int) string {
 
 	return string(bytes)
 
+}
+
+func RootDir() string {
+	_, b, _, _ := runtime.Caller(0)
+	d := path.Join(path.Dir(b))
+	return filepath.Dir(d)
 }

@@ -6,6 +6,7 @@ require (
 	github.com/TwiN/go-color v1.4.1
 	github.com/stretchr/testify v1.8.4
 	github.com/yosssi/gohtml v0.0.0-20201013000340-ee4748c638f4
+	golang.org/x/text v0.14.0
 )
 
 require (

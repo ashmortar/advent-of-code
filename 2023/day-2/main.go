@@ -112,7 +112,7 @@ func main() {
 	endTime2 := time.Now()
 
 	printWidth := 25
-	title := "\n\t\tAdvent of Code 2023 Day 2"
+	title := "\nAdvent of Code 2023 Day 2"
 
 	fmt.Println(color.Bold + color.Purple + title + color.Reset)
 	fmt.Println(color.Bold + color.Blue + strings.Repeat("=", 55) + color.Reset)

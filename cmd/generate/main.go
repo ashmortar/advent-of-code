@@ -23,7 +23,7 @@ func main() {
 		// and use the next day / year and day
 		numberReg := regexp.MustCompile(`\d+`)
 
-		contents, err := os.ReadDir(".")
+		contents, err := os.ReadDir(utils.RootDir())
 		if err != nil {
 			fmt.Println("Error reading directory:", err)
 			return
@@ -35,7 +35,7 @@ func main() {
 				matches := numberReg.FindAllString(f.Name(), -1)
 				if len(matches) == 1 && matches[0] > year {
 					year = matches[0]
-					days, err := os.ReadDir(filepath.Join(".", year))
+					days, err := os.ReadDir(filepath.Join(utils.RootDir(), year))
 					if err != nil {
 						fmt.Println("Error reading directory:", err)
 						return
@@ -81,7 +81,7 @@ func main() {
 	}
 
 	// Create the directory structure if it doesn't exist
-	dirPath := filepath.Join(year, "day-"+day)
+	dirPath := filepath.Join(utils.RootDir(), year, "day-"+day)
 	if err := os.MkdirAll(dirPath, os.ModePerm); err != nil {
 		fmt.Println("Error creating directories:", err)
 		return
@@ -97,7 +97,7 @@ func main() {
 	}
 
 	for _, tpl := range templates {
-		sourceData, err := os.ReadFile(tpl.sourcePath)
+		sourceData, err := os.ReadFile(filepath.Join(utils.RootDir(), tpl.sourcePath))
 		if err != nil {
 			fmt.Println("Error reading template file:", err)
 			return
