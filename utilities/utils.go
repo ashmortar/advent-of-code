@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/yosssi/gohtml"
 )
 
 func getCookie() string {
@@ -51,8 +52,9 @@ func fetchProblem(year int, day int) string {
 
 func CacheProblem(year int, day int) string {
 	problem := fetchProblem(year, day)
+	problem = gohtml.Format(problem)
 	fmt.Printf("Caching problem for year %d day %d\n", year, day)
-	filepath := "./" + strconv.Itoa(year) + "/day-" + strconv.Itoa(day) + "/problem.md"
+	filepath := "./" + strconv.Itoa(year) + "/day-" + strconv.Itoa(day) + "/problem.html"
 	err := os.WriteFile(filepath, []byte(problem), 0644)
 
 	if err != nil {
