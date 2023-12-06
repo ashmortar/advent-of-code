@@ -26,6 +26,12 @@ go run ./aoc 2020
 go run ./aoc -year 2020
 ```
 
+### Run all years
+
+```bash
+go run ./aoc
+```
+
 ## Generating Setup Code
 
 ### Create the next day chronologically
