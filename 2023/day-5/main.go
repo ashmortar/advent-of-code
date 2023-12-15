@@ -98,85 +98,182 @@ func parseMapRow(input string) (sourceRangeStart, targetRangeStart, rangeLength 
 	return sourceRangeStart, targetRangeStart, rangeLength
 }
 
-func mapSeeds(options [][]int, input string) int {
+type MapRange struct {
+	name   string
+	ranges [][]int
+}
 
-	// fmt.Printf("Seeds are: %v\n", options)
-	mappedThisRound := make([]bool, len(options))
-	lines := strings.Split(input, "\n")
-	// begin at the first line of the first map
-	for i := 2; i < len(lines); i++ {
-		// if this is an empty line continue
-		if len(lines[i]) == 0 {
-			fmt.Printf("results: %v\n\n", options)
-			continue
-		}
-		// if this is the line identifying the map
-		// then print the map name and continue
-		if strings.Contains(lines[i], "map") {
-			mappedThisRound = make([]bool, len(options))
-			fmt.Printf("Processing %s\n", lines[i])
-			continue
-		}
-		// we are in a map line
+func getMapName(input string, index int) string {
+	mapNamePattern := regexp.MustCompile(`\w+-to-\w+`)
+	mapNames := mapNamePattern.FindAllString(input, -1)
+	return mapNames[index]
+}
 
-		sourceRangeStart, targetRangeStart, rangeLength := parseMapRow(lines[i])
-		sourceRangeEnd := sourceRangeStart + rangeLength
-		for j := 0; j < len(options); j++ {
-			currentOption := options[j]
-			currentStart := options[j][0]
-			currentEnd := currentStart + options[j][1]
-			alreadyMapped := mappedThisRound[j]
-			if alreadyMapped {
-				fmt.Printf("option %d has already been mapped\n", currentOption)
+func getMaps(input string) []MapRange {
+	orderedMapRanges := []MapRange{}
+	mapPattern := regexp.MustCompile(`map:\n`)
+	mapRowPattern := regexp.MustCompile(`\d+ \d+ \d+`)
+	mapIndices := mapPattern.FindAllStringIndex(input, -1)
+	for i, index := range mapIndices {
+		mapRange := MapRange{
+			name:   getMapName(input, i),
+			ranges: [][]int{},
+		}
+
+		start := index[1]
+		var end int
+		if i == len(mapIndices)-1 {
+			end = len(input)
+		} else {
+			end = mapIndices[i+1][0]
+		}
+		mapString := input[start:end]
+		mapLines := strings.Split(mapString, "\n")
+		for _, line := range mapLines {
+			isMapRow := mapRowPattern.MatchString(line)
+			if !isMapRow {
 				continue
 			}
+			sourceRangeStart, targetRangeStart, rangeLength := parseMapRow(line)
+			mapRange.ranges = append(mapRange.ranges, []int{sourceRangeStart, targetRangeStart, rangeLength})
+		}
+		orderedMapRanges = append(orderedMapRanges, mapRange)
+	}
+	return orderedMapRanges
+}
 
-			fmt.Printf("is %d in range %d-%d?\t", currentOption, sourceRangeStart, sourceRangeEnd)
-			currentInRange := currentStart <= sourceRangeEnd && currentEnd >= sourceRangeStart
-			if currentInRange && !mappedThisRound[j] {
-				fmt.Printf("yes, ")
-
-				offset := currentStart - sourceRangeStart
-				fmt.Printf("offset from source range start is %d, ", offset)
-
-				result := []int{targetRangeStart + offset, options[j][1]}
-				fmt.Printf("result is %d + %d = %d, ", targetRangeStart, offset, result)
-				options[j] = result
-				wasMapped := true
-				mappedThisRound[j] = wasMapped
-				fmt.Printf("mapped to %d\n", result)
-			} else {
-				fmt.Printf("no, ")
-				if mappedThisRound[j] {
-					fmt.Printf("option has already been mapped\n")
-				} else if currentEnd < sourceRangeStart {
-					fmt.Printf("option is less than source range start\n")
-				} else if currentStart >= sourceRangeEnd {
-					fmt.Printf("option is greater than source range end\n")
+func processMap(inputRanges [][]int, mapRange MapRange, noisy bool) [][]int {
+	if noisy {
+		fmt.Printf("\n\n~~~~~~~~~Processing map %s~~~~~~~~~~\n", mapRange.name)
+	}
+	results := [][]int{}
+	if noisy {
+		fmt.Printf("input ranges: %v\n", inputRanges)
+	}
+	for _, inputRange := range inputRanges {
+		if noisy {
+			time.Sleep(1 * time.Second)
+			fmt.Printf("checking input range: %d-%d\n", inputRange[0], inputRange[0]+inputRange[1])
+		}
+		mapped := false
+		inputRangeStart := inputRange[0]
+		inputRangeEnd := inputRangeStart + inputRange[1]
+		for _, mapRange := range mapRange.ranges {
+			if noisy {
+				fmt.Printf("against map range: %d-%d\n", mapRange[0], mapRange[0]+mapRange[2])
+			}
+			if mapped {
+				if noisy {
+					fmt.Printf("already mapped\n")
 				}
+				break
+			}
+			sourceRangeStart := mapRange[0]
+			sourceRangeEnd := sourceRangeStart + mapRange[2]
+			targetRangeStart := mapRange[1]
+
+			rangesOverlap := inputRangeStart >= sourceRangeStart && inputRangeStart <= sourceRangeEnd ||
+				inputRangeEnd >= sourceRangeStart && inputRangeEnd <= sourceRangeEnd
+
+			if rangesOverlap {
+				if noisy {
+					fmt.Print("Ranges overlap\n")
+				}
+				startOfOverLap := inputRangeStart
+				if startOfOverLap < sourceRangeStart {
+					if noisy {
+						fmt.Printf("start of overlap is less than target range start\n")
+					}
+					startOfOverLap = sourceRangeStart
+				}
+				endOfOverLap := inputRangeEnd
+				if endOfOverLap > sourceRangeEnd {
+					if noisy {
+						fmt.Printf("end of overlap is greater than target range end\n")
+					}
+					endOfOverLap = sourceRangeEnd
+				}
+				if noisy {
+					fmt.Printf("overlap: %d-%d\n", startOfOverLap, endOfOverLap)
+				}
+				offset := startOfOverLap - sourceRangeStart
+				if noisy {
+					fmt.Printf("offset: %d\n", offset)
+				}
+				mappedResult := []int{targetRangeStart + offset, endOfOverLap - startOfOverLap}
+				if noisy {
+					fmt.Printf("mapped result: %v\n", mappedResult)
+				}
+				results = append(results, mappedResult)
+
+				hasLeftOverStart := startOfOverLap > inputRangeStart
+				if hasLeftOverStart {
+					leftOverStart := []int{inputRangeStart, offset}
+					if noisy {
+						fmt.Printf("left over start: %v\n", leftOverStart)
+					}
+					results = append(results, leftOverStart)
+				}
+				hasLeftOverEnd := endOfOverLap < inputRangeEnd
+				if hasLeftOverEnd {
+					leftOverEnd := []int{endOfOverLap, inputRangeEnd - endOfOverLap}
+					if noisy {
+						fmt.Printf("left over end: %v\n", leftOverEnd)
+					}
+					results = append(results, leftOverEnd)
+				}
+				mapped = true
+				if noisy {
+					fmt.Println()
+				}
+				break
+			}
+			if noisy {
+				fmt.Printf("ranges do not overlap\n\n")
 			}
 		}
-		fmt.Printf("mappedThisRound: %v\n", mappedThisRound)
-		println()
+		if !mapped {
+			results = append(results, inputRange)
+		}
 	}
-	fmt.Printf("\nresults: %v\n", options)
+	return results
+}
 
-	slices.SortFunc(options, func(a, b []int) int {
+func mapSeeds(options [][]int, input string, noisy bool) int {
+	if noisy {
+		fmt.Printf("Seeds are: %v\n", options)
+	}
+	maps := getMaps(input)
+	if noisy {
+		fmt.Printf("Maps are: %v\n", maps)
+	}
+	ourOpts := [][]int{}
+	for _, opt := range options {
+		ourOpts = append(ourOpts, []int{opt[0], opt[1]})
+	}
+	for _, mapRanges := range maps {
+
+		ourOpts = processMap(ourOpts, mapRanges, noisy)
+		if noisy {
+			fmt.Printf("options after map: %v\n", ourOpts)
+		}
+	}
+
+	slices.SortFunc(ourOpts, func(a, b []int) int {
 		return a[0] - b[0]
 	})
-	fmt.Printf("sorted options: %v\n", options)
-	return options[0][0]
-
+	if noisy {
+		fmt.Printf("sorted options: %v\n", ourOpts)
+	}
+	return ourOpts[0][0]
 }
 
 func Part1(input string) int {
-	// return mapSeeds(getSeeds(input, false), input)
-	return 0
+	return mapSeeds(getSeeds(input, false), input, false)
 }
 
 func Part2(input string) int {
-
-	return mapSeeds(getSeeds(input, true), input)
+	return mapSeeds(getSeeds(input, true), input, true)
 }
 
 func main() {
