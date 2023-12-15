@@ -3,7 +3,8 @@
     --- Day 5: If You Give A Seed A Fertilizer ---
   </h2>
   <p>
-    You take the boat and find the gardener right where you were told he would be: managing a giant "garden" that looks more to you like a farm.
+    You take the boat and find the gardener right where you were told he would be: managing a giant "garden" that looks
+    more to you like a farm.
   </p>
   <p>
     "A water source? Island Island
@@ -21,13 +22,17 @@
     <a href="https://en.wikipedia.org/wiki/Sand_filter" target="_blank">
       filter
     </a>
-    it with! Can't make snow with dirty water. Don't worry, I'm sure we'll get more sand soon; we only turned off the water a few days... weeks... oh no." His face sinks into a look of horrified realization.
+    it with! Can't make snow with dirty water. Don't worry, I'm sure we'll get more sand soon; we only turned off the
+    water a few days... weeks... oh no." His face sinks into a look of horrified realization.
   </p>
   <p>
-    "I've been so busy making sure everyone here has food that I completely forgot to check why we stopped getting more sand! There's a ferry leaving soon that is headed over in that direction - it's much faster than your boat. Could you please go check it out?"
+    "I've been so busy making sure everyone here has food that I completely forgot to check why we stopped getting more
+    sand! There's a ferry leaving soon that is headed over in that direction - it's much faster than your boat. Could
+    you please go check it out?"
   </p>
   <p>
-    You barely have time to agree to this request when he brings up another. "While you wait for the ferry, maybe you can help us with our
+    You barely have time to agree to this request when he brings up another. "While you wait for the ferry, maybe you
+    can help us with our
     <em>
       food production problem
     </em>
@@ -38,7 +43,10 @@
     just arrived and we're having trouble making sense of it."
   </p>
   <p>
-    The almanac (your puzzle input) lists all of the seeds that need to be planted. It also lists what type of soil to use with each kind of seed, what type of fertilizer to use with each kind of soil, what type of water to use with each kind of fertilizer, and so on. Every type of seed, soil, fertilizer and so on is identified with a number, but numbers are reused by each category - that is, soil
+    The almanac (your puzzle input) lists all of the seeds that need to be planted. It also lists what type of soil to
+    use with each kind of seed, what type of fertilizer to use with each kind of soil, what type of water to use with
+    each kind of fertilizer, and so on. Every type of seed, soil, fertilizer and so on is identified with a number, but
+    numbers are reused by each category - that is, soil
     <code>
       123
     </code>
@@ -129,7 +137,8 @@ humidity-to-location map:
     <em>
       soil number
     </em>
-    (the destination). This lets the gardener and his team know which soil to use with which seeds, which water to use with which fertilizer, and so on.
+    (the destination). This lets the gardener and his team know which soil to use with which seeds, which water to use
+    with which fertilizer, and so on.
   </p>
   <p>
     Rather than list every source number and its corresponding destination number one by one, the maps describe entire
@@ -376,7 +385,8 @@ humidity-to-location map:
     </li>
   </ul>
   <p>
-    The gardener and his team want to get started as soon as possible, so they'd like to know the closest location that needs a seed. Using these maps, find
+    The gardener and his team want to get started as soon as possible, so they'd like to know the closest location that
+    needs a seed. Using these maps, find
     <em>
       the lowest location number that corresponds to any of the initial seeds
     </em>
@@ -554,4 +564,24 @@ humidity-to-location map:
       What is the lowest location number that corresponds to any of the initial seed numbers?
     </em>
   </p>
+</article>
+<article class="day-desc">
+  <h2 id="part2">--- Part Two ---</h2>
+  <p>Everyone will starve if you only plant such a small number of seeds. Re-reading the almanac, it looks like the
+    <code>seeds:</code> line actually describes <em>ranges of seed numbers</em>.</p>
+  <p>The values on the initial <code>seeds:</code> line come in pairs. Within each pair, the first value is the
+    <em>start</em> of the range and the second value is the <em>length</em> of the range. So, in the first line of the
+    example above:</p>
+  <pre><code>seeds: 79 14 55 13</code></pre>
+  <p>This line describes two ranges of seed numbers to be planted in the garden. The first range starts with seed number
+    <code>79</code> and contains <code>14</code> values: <code>79</code>, <code>80</code>, ..., <code>91</code>,
+    <code>92</code>. The second range starts with seed number <code>55</code> and contains <code>13</code> values:
+    <code>55</code>, <code>56</code>, ..., <code>66</code>, <code>67</code>.</p>
+  <p>Now, rather than considering four seed numbers, you need to consider a total of <em>27</em> seed numbers.</p>
+  <p>In the above example, the lowest location number can be obtained from seed number <code>82</code>, which
+    corresponds to soil <code>84</code>, fertilizer <code>84</code>, water <code>84</code>, light <code>77</code>,
+    temperature <code>45</code>, humidity <code>46</code>, and <em>location <code>46</code></em>. So, the lowest
+    location number is <code><em>46</em></code>.</p>
+  <p>Consider all of the initial seed numbers listed in the ranges on the first line of the almanac. <em>What is the
+      lowest location number that corresponds to any of the initial seed numbers?</em></p>
 </article>
