@@ -21,7 +21,7 @@ func BenchmarkPart1(b *testing.B) {
 }
 
 func TestPart2(t *testing.T) {
-	assert.Equal(t, 0, Part2(testInput))
+	assert.Equal(t, 52210644, Part2(testInput))
 }
 
 func BenchmarkPart2(b *testing.B) {

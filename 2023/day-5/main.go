@@ -142,29 +142,35 @@ func getMaps(input string) []MapRange {
 	return orderedMapRanges
 }
 
-func processMap(inputRanges [][]int, mapRange MapRange, noisy bool) [][]int {
+func processMap(inputRanges [][]int, mapRangeStruct MapRange, noisy bool) [][]int {
 	if noisy {
-		fmt.Printf("\n\n~~~~~~~~~Processing map %s~~~~~~~~~~\n", mapRange.name)
+		fmt.Printf("\n\n~~~~~~~~~Processing map %s~~~~~~~~~~\n", mapRangeStruct.name)
 	}
 	results := [][]int{}
-	if noisy {
-		fmt.Printf("input ranges: %v\n", inputRanges)
-	}
+	inputsToProcess := [][]int{}
 	for _, inputRange := range inputRanges {
+		inputsToProcess = append(inputsToProcess, []int{inputRange[0], inputRange[1]})
+	}
+
+	for len(inputsToProcess) > 0 {
+		inputRange := inputsToProcess[0]
+		inputsToProcess = inputsToProcess[1:]
 		if noisy {
 			time.Sleep(1 * time.Second)
 			fmt.Printf("checking input range: %d-%d\n", inputRange[0], inputRange[0]+inputRange[1])
 		}
+
 		mapped := false
 		inputRangeStart := inputRange[0]
 		inputRangeEnd := inputRangeStart + inputRange[1]
-		for _, mapRange := range mapRange.ranges {
+
+		for _, mapRange := range mapRangeStruct.ranges {
 			if noisy {
-				fmt.Printf("against map range: %d-%d\n", mapRange[0], mapRange[0]+mapRange[2])
+				fmt.Printf("\tagainst map range: %d-%d\n", mapRange[0], mapRange[0]+mapRange[2])
 			}
 			if mapped {
 				if noisy {
-					fmt.Printf("already mapped\n")
+					fmt.Printf("\t\talready mapped\n")
 				}
 				break
 			}
@@ -177,50 +183,51 @@ func processMap(inputRanges [][]int, mapRange MapRange, noisy bool) [][]int {
 
 			if rangesOverlap {
 				if noisy {
-					fmt.Print("Ranges overlap\n")
+					fmt.Print("\tYES\n")
 				}
 				startOfOverLap := inputRangeStart
 				if startOfOverLap < sourceRangeStart {
 					if noisy {
-						fmt.Printf("start of overlap is less than target range start\n")
+						fmt.Printf("\t\tstart of overlap is less than target range start\n")
 					}
 					startOfOverLap = sourceRangeStart
 				}
 				endOfOverLap := inputRangeEnd
 				if endOfOverLap > sourceRangeEnd {
 					if noisy {
-						fmt.Printf("end of overlap is greater than target range end\n")
+						fmt.Printf("\t\tend of overlap is greater than target range end\n")
 					}
 					endOfOverLap = sourceRangeEnd
 				}
 				if noisy {
-					fmt.Printf("overlap: %d-%d\n", startOfOverLap, endOfOverLap)
+					fmt.Printf("\t\toverlap: %d-%d\n", startOfOverLap, endOfOverLap)
 				}
 				offset := startOfOverLap - sourceRangeStart
 				if noisy {
-					fmt.Printf("offset: %d\n", offset)
+					fmt.Printf("\t\toffset: %d\n", offset)
 				}
 				mappedResult := []int{targetRangeStart + offset, endOfOverLap - startOfOverLap}
 				if noisy {
-					fmt.Printf("mapped result: %v\n", mappedResult)
+					fmt.Printf("\t\tmapped result: %v\n", mappedResult)
 				}
+
 				results = append(results, mappedResult)
 
 				hasLeftOverStart := startOfOverLap > inputRangeStart
 				if hasLeftOverStart {
-					leftOverStart := []int{inputRangeStart, offset}
+					leftOverStart := []int{inputRangeStart, startOfOverLap - inputRangeStart - 1}
 					if noisy {
-						fmt.Printf("left over start: %v\n", leftOverStart)
+						fmt.Printf("\t\tleft over start: %v\n", leftOverStart)
 					}
-					results = append(results, leftOverStart)
+					inputsToProcess = append(inputsToProcess, leftOverStart)
 				}
 				hasLeftOverEnd := endOfOverLap < inputRangeEnd
 				if hasLeftOverEnd {
-					leftOverEnd := []int{endOfOverLap, inputRangeEnd - endOfOverLap}
+					leftOverEnd := []int{endOfOverLap + 1, inputRangeEnd - endOfOverLap - 1}
 					if noisy {
-						fmt.Printf("left over end: %v\n", leftOverEnd)
+						fmt.Printf("\t\tleft over end: %v\n", leftOverEnd)
 					}
-					results = append(results, leftOverEnd)
+					inputsToProcess = append(inputsToProcess, leftOverEnd)
 				}
 				mapped = true
 				if noisy {
@@ -229,10 +236,14 @@ func processMap(inputRanges [][]int, mapRange MapRange, noisy bool) [][]int {
 				break
 			}
 			if noisy {
-				fmt.Printf("ranges do not overlap\n\n")
+				fmt.Printf("\tNO\n\n")
 			}
 		}
 		if !mapped {
+			if noisy {
+				fmt.Printf("\tNo map, range unchanged\n")
+			}
+
 			results = append(results, inputRange)
 		}
 	}
@@ -273,7 +284,7 @@ func Part1(input string) int {
 }
 
 func Part2(input string) int {
-	return mapSeeds(getSeeds(input, true), input, true)
+	return mapSeeds(getSeeds(input, true), input, false)
 }
 
 func main() {
